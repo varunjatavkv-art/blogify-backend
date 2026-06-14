@@ -30,6 +30,7 @@ router.post("/signin", async (req,res) => {
         const isValidPassword = bcrypt.compare(password, user.password);
         if(!isValidPassword) return res.json({status: 400, message: "Invalid Password"});
 
+        req.user = user;
         const payload = {
             id: user._id,
             user_name: user.fullName,

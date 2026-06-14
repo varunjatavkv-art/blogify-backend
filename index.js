@@ -2,6 +2,7 @@ const express = require("express");
 const dotenv = require("dotenv");
 const path = require("path");
 const userRouter = require("./routes/user.js");
+const blogRouter = require("./routes/blog.js");
 const ConnectMongoDB = require("./db_con/db_connection");
 const PORT = process.env.PORT;
 
@@ -18,6 +19,8 @@ app.get("/", (req,res) => {
   res.end("<h1>Hello World</h1>")
 });
 app.use("/user", userRouter);
+
+app.use('/blog', blogRouter);
 app.listen(PORT, () => {
     console.log(`Server is running on PORT : `, PORT);
 })
