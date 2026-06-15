@@ -1,6 +1,7 @@
 const { Router } = require("express");
 const BLOG = require("../models/blog");
 const multer  = require('multer');
+const authentication = require('../authentication');
 
 const storage = multer.diskStorage({destination: function (req, file, cb) {
     cb(null, 'uploads/'); 
@@ -17,23 +18,24 @@ const upload = multer({ storage: storage })
 const router = Router();
 
 
-router.post("/create_blog", async(req,res) => {
+router.post("/create_blog",authentication, upload.single('blogImage'), async(req,res) => {
     try {
-        console.log("user",req.user);
+        const { filename : blogImage } = req.file;
         const { blogTitle, blogDescription } = req.body;
-        const author = req.user._id;
+        const author = req.user.id;
      
         
         const blog = await BLOG.create({
+            blogImage,
             blogTitle,
             blogDescription,
             author
         });
-        res.json({status: 201, message: "A new user created Successfully !!"});
+        res.json({status: 201, message: "A new blog is created Successfully !!"});
     } catch (error) {
         console.log(error);
         
-        res.json({status: 500, message: "Error in creating a blog:", error})
+        res.send({status: 500, message: "Error in creating a blog:", error})
     }
 });
 

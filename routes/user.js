@@ -7,9 +7,7 @@ const dotenv = require("dotenv");
 dotenv.config();
 router.post("/signup", async (req,res) => {
     const { fullName, email, password } = req.body;
-    
     try {
-      
         const singleUser = await USER.create({
             fullName,
             email,
@@ -26,11 +24,10 @@ router.post("/signin", async (req,res) => {
     try {
         const { email, password } = req.body;
         const user = await USER.findOne({email});
-        if(!user) return res.json({status: 404, message: "Invalid Credentials"});
+        if(!user) return res.json({status: 400, message: "Invalid Credentials"});
         const isValidPassword = bcrypt.compare(password, user.password);
         if(!isValidPassword) return res.json({status: 400, message: "Invalid Password"});
 
-        req.user = user;
         const payload = {
             id: user._id,
             user_name: user.fullName,
@@ -41,7 +38,7 @@ router.post("/signin", async (req,res) => {
         const token = jwt.sign(payload,process.env.JWT_SECRET, {expiresIn: '1h'});
 
         res.cookie('authToken', token);
-        res.json({status: 200, message: "Login Successfully!!" , payload: payload})
+        res.json({status: 200, message: "Login Successfully!!"})
     } catch (error) {
         res.json({status: 500, message: "Error in login:", error});
     }
